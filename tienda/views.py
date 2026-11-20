@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Categoria, Productos, Cliente
 from .forms import CategoriaForm, ProductoForm, ClienteForm
 from django.db.models import Count, Sum
+from django.core.paginator import Paginator
 # ---------- INICIO ----------
 def inicio(request):
     productos = Productos.objects.filter(activo=True)

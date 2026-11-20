@@ -1,31 +1,63 @@
-{% extends 'base.html' %}
-{% block title %}Productos{% endblock %}
+{% extends "base.html" %}
+{% block title %}Nuestros productos{% endblock %}
 {% block content %}
-<div class="card">
-    <h2>Lista de Productos</h2>
-    <a href="{% url 'crear_producto' %}" class="btn btn-success">+ Nuevo Producto</a>
-    <table>
-        <thead>
-            <tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Categoría</th><th>Activo</th><th>Acciones</th></tr>
-        </thead>
-        <tbody>
-            {% for producto in productos %}
-            <tr>
-                <td>{{ producto.id }}</td>
-                <td>{{ producto.nombre }}</td>
-                <td>${{ producto.precio }}</td>
-                <td>{{ producto.stock }}</td>
-                <td>{{ producto.categoria.nombre }}</td>
-                <td>{% if producto.activo %}✅{% else %}❌{% endif %}</td>
-                <td>
-                    <a href="{% url 'editar_producto' producto.pk %}" class="btn btn-warning">Editar</a>
-                    <a href="{% url 'eliminar_producto' producto.pk %}" class="btn btn-danger">Eliminar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7">No hay productos registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h1>Nuestros productos</h1>
+
+<form method="get" class="search-bar" role="search">
+  <div>
+    <label for="q" class="sr-only">Buscar producto</label>
+    <input type="search" id="q" name="q" value="{{ q }}" placeholder="Buscar pastel, galleta...">
+  </div>
+  <div>
+    <label for="categoria" class="sr-only">Categoría</label>
+    <select id="categoria" name="categoria">
+      <option value="">Todas las categorías</option>
+      {% for c in categorias %}
+        <option value="{{ c.pk }}" {% if categoria_id == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Buscar</button>
+  {% if q or categoria_id %}<a href="{% url 'lista_productos' %}" class="btn btn-outline">Limpiar</a>{% endif %}
+</form>
+
+{% if user.is_authenticated %}
+  <p><a href="{% url 'crear_producto' %}" class="btn btn-secondary">+ Nuevo producto</a></p>
+{% endif %}
+
+<div class="grid">
+  {% for p in page_obj %}
+  <article class="card">
+    <span class="badge">{{ p.categoria.nombre }}</span>
+    <h3>{{ p.nombre }}</h3>
+    <p class="small">{{ p.descripcion|default:"Sin descripción"|truncatechars:80 }}</p>
+    <p class="price">${{ p.precio }}</p>
+    {% if p.stock == 0 %}
+      <p class="stock agotado">Agotado</p>
+    {% else %}
+      <p class="stock">Disponibles: {{ p.stock }}</p>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <div class="card-actions">
+      <a href="{% url 'editar_producto' p.pk %}" class="btn btn-outline btn-sm" aria-label="Editar {{ p.nombre }}">Editar</a>
+      <a href="{% url 'eliminar_producto' p.pk %}" class="btn btn-danger btn-sm" aria-label="Eliminar {{ p.nombre }}">Borrar</a>
+    </div>
+    {% endif %}
+  </article>
+  {% empty %}
+  <p class="empty">No hay productos{% if q or categoria_id %} que coincidan con tu búsqueda{% else %} aún{% endif %}.</p>
+  {% endfor %}
 </div>
+
+{% if page_obj.has_other_pages %}
+<nav class="pagination" aria-label="Paginación">
+  {% if page_obj.has_previous %}
+    <a class="btn btn-outline btn-sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">« Anterior</a>
+  {% endif %}
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+    <a class="btn btn-outline btn-sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente »</a>
+  {% endif %}
+</nav>
+{% endif %}
 {% endblock %}
