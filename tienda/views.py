@@ -5,6 +5,9 @@ from .models import Categoria, Productos, Cliente
 from .forms import CategoriaForm, ProductoForm, ClienteForm
 from django.db.models import Count, Sum
 from django.core.paginator import Paginator
+from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic import ListView, CreateView
+from django.urls import reverse_lazy
 # ---------- INICIO ----------
 def inicio(request):
     productos = Productos.objects.filter(activo=True)

@@ -2,68 +2,62 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CasaKame{% endblock %} · Pastelería</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Mi Negocio Joel{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-
-<header class="site-header">
-    <nav class="nav" aria-label="Navegación principal">
-        <a href="{% url 'inicio' %}" class="logo">CasaKame</a>
-
-        <button class="nav-toggle" type="button" aria-label="Abrir menú"
-                aria-expanded="false" aria-controls="menu">☰</button>
-
-        <ul class="nav-links" id="menu">
-            <li><a href="{% url 'inicio' %}">Inicio</a></li>
-            <li><a href="{% url 'lista_productos' %}">Productos</a></li>
-            <li><a href="{% url 'lista_categorias' %}">Categorías</a></li>
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'lista_clientes' %}">Clientes</a></li>
-                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                <li class="nav-user">Hola, {{ user.username }}</li>
-                <li>
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary btn-sm">Cerrar sesión</button>
-                    </form>
-                </li>
-            {% else %}
-                <li><a href="{% url 'login' %}" class="btn btn-secondary btn-sm">Iniciar sesión</a></li>
-            {% endif %}
-        </ul>
+  <header class="site-header">
+    <nav class="nav" aria-label="Menú principal">
+      <a href="{% url 'inicio' %}" class="logo">Mi Negocio Joel</a>
+      <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">☰</button>
+      <ul class="nav-links" id="menu">
+        <li><a href="{% url 'inicio' %}" {% if request.resolver_match.url_name == 'inicio' %}class="active" aria-current="page"{% endif %}>Inicio</a></li>
+        <li><a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active" aria-current="page"{% endif %}>Dashboard</a></li>
+        <li><a href="{% url 'lista_categorias' %}" {% if 'categoria' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>Categorías</a></li>
+        <li><a href="{% url 'lista_productos' %}" {% if 'producto' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>Productos</a></li>
+        <li><a href="{% url 'lista_clientes' %}" {% if 'cliente' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>Clientes</a></li>
+        {% if user.is_authenticated %}
+          <li class="nav-user">Hola, {{ user.username }}</li>
+          <li>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-secondary btn-sm">Salir</button>
+            </form>
+          </li>
+        {% else %}
+          <li><a href="{% url 'login' %}" class="btn btn-secondary btn-sm">Entrar</a></li>
+        {% endif %}
+      </ul>
     </nav>
-</header>
+  </header>
 
-<main class="container">
+  <main class="container">
     {% if messages %}
-        <ul class="messages" role="status">
-            {% for message in messages %}
-                <li class="message {{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="message {{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
     {% endif %}
-
     {% block content %}{% endblock %}
-</main>
+  </main>
 
-<footer class="site-footer">
-    <p>© {% now "Y" %} — CasaKame · Pastelería</p>
-</footer>
+  <footer class="site-footer">
+    <p>© {% now "Y" %} — Mi Negocio Joel</p>
+  </footer>
 
-<script>
+  <script>
     const toggle = document.querySelector('.nav-toggle');
     const menu = document.getElementById('menu');
     toggle.addEventListener('click', () => {
-        const abierto = menu.classList.toggle('open');
-        toggle.setAttribute('aria-expanded', abierto);
+      const open = menu.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
     });
-</script>
+  </script>
 </body>
 </html>
