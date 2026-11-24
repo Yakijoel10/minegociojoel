@@ -1,3 +1,4 @@
+{% extends "base.html" %}
 <form method="post" novalidate>
   {% csrf_token %}
   {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
