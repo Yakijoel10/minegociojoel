@@ -26,8 +26,8 @@
 {% endif %}
 
 <div class="grid">
+  {% for producto in productos %}
   <article class="card">
-  {% for p in page_obj %}
     <span class="badge">{{ p.categoria.nombre }}</span>
     <h3>{{ p.nombre }}</h3>
     <p class="small">{{ p.descripcion|default:"Sin descripción"|truncatechars:80 }}</p>
