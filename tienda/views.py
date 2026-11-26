@@ -58,28 +58,9 @@ def eliminar_categoria(request, pk):
 
 # ---------- PRODUCTOS (CRUD) ----------
 def lista_productos(request):
-    q = request.GET.get('q', '').strip()
-    categoria_id = request.GET.get('categoria', '')
+    productos = Productos.objects.all()
+    return render(request, 'tienda/productos/lista.html', {'productos': productos})
 
-    productos = Productos.objects.select_related('categoria').order_by('-id')
-    if q:
-        productos = productos.filter(nombre__icontains=q)
-    if categoria_id:
-        productos = productos.filter(categoria_id=categoria_id)
-
-    paginator = Paginator(productos, 8)
-    page_obj = paginator.get_page(request.GET.get('page'))
-
-    params = request.GET.copy()
-    params.pop('page', None)
-
-    return render(request, 'lista.html', {
-        'page_obj': page_obj,
-        'categorias': Categoria.objects.all(),
-        'q': q,
-        'categoria_id': categoria_id,
-        'querystring': params.urlencode(),
-    })
 @login_required
 def crear_producto(request):
     if request.method == 'POST':
